@@ -59,7 +59,40 @@ export class WeatherService {
           },
         },
       );
-      return response.data;
+
+      const data = response.data;
+
+      // Customizing response
+      return {
+        location: {
+          city: data.name,
+          country: data.sys.country,
+          coordinates: {
+            latitude: data.coord.lat,
+            longitude: data.coord.lon,
+          },
+        },
+        weather: {
+          condition: data.weather[0].main,
+          description: data.weather[0].description,
+          iconUrl: `http://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`,
+        },
+        temperature: {
+          current: `${data.main.temp}°C`,
+          feelsLike: `${data.main.feels_like}°C`,
+          min: `${data.main.temp_min}°C`,
+          max: `${data.main.temp_max}°C`,
+        },
+        wind: {
+          speed: `${data.wind.speed} m/s`,
+          direction: `${data.wind.deg}°`,
+        },
+        visibility: `${data.visibility} meters`,
+        pressure: `${data.main.pressure} hPa`,
+        humidity: `${data.main.humidity}%`,
+        sunrise: new Date(data.sys.sunrise * 1000).toLocaleTimeString(),
+        sunset: new Date(data.sys.sunset * 1000).toLocaleTimeString(),
+      };
     } catch (error) {
       throw new HttpException('Error fetching weather data', HttpStatus.BAD_REQUEST);
     }
